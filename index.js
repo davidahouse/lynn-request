@@ -18,7 +18,7 @@ class LynnRequest {
       // create our http options object
       const path = this.buildPath(this.request.options)
       const options = {
-        'protocol': this.request.options.protocol ? this.request.options.protocol : 'https',
+        'protocol': this.request.options.protocol ? this.request.options.protocol : 'https:',
         'host': this.request.options.host ? this.request.options.host : 'localhost',
         'port': this.request.options.port ? this.request.options.port : 443,
         'method': this.request.options.method ? this.request.options.method : 'GET',
