@@ -85,7 +85,12 @@ class LynnRequest {
     this.buildPath = function(options) {
       const basePath = options.path ? options.path : '/'
       if (options.queryString != null) {
-        return basePath + '?' + querystring.stringify(options.queryString)
+        const queryString = querystring.stringify(options.queryString)
+        if (queryString != '') {
+          return basePath + '?' + queryString
+        } else {
+          return basePath
+        }
       } else {
         return basePath
       }
