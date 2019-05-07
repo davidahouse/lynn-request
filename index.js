@@ -42,7 +42,12 @@ class LynnRequest {
           const headers = res.headers
 
           try {
-            const parsedData = JSON.parse(rawData)
+            let parsedData = null
+            if (headers['content-type'].includes('json')) {
+              parsedData = JSON.parse(rawData)
+            } else {
+              parsedData = rawData
+            }
             const result = {
               'options': options,
               'statusCode': statusCode,
