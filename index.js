@@ -77,7 +77,12 @@ class LynnRequest {
           const headers = res.headers
 
           try {
-            const parsedData = JSON.parse(rawData)
+            let parsedData = null
+            if (headers['content-type'].includes('json')) {
+              parsedData = JSON.parse(rawData)
+            } else {
+              parsedData = rawData
+            }
             const result = {
               'options': options,
               'statusCode': statusCode,
@@ -126,7 +131,12 @@ class LynnRequest {
     this.buildPath = function(options) {
       const basePath = options.path ? options.path : '/'
       if (options.queryString != null) {
-        return basePath + '?' + querystring.stringify(options.queryString)
+        const queryString = querystring.stringify(options.queryString)
+        if (queryString != '') {
+          return basePath + '?' + queryString
+        } else {
+          return basePath
+        }
       } else {
         return basePath
       }
