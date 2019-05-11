@@ -1,6 +1,6 @@
 {
   "name": "lynn-request",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A high level API for making web requests",
   "license": "MIT",
   "repository": "davidahouse/lynn-request",
@@ -19,6 +19,7 @@
     "test-debug": "mocha --inspect-brk test/lynn-request-tests.js"
   },
   "dependencies": {
+    "form-data": "^2.3.3",
     "jsonpath": "^1.0.0",
     "moment": "^2.22.2"
   },
