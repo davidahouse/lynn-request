@@ -1,7 +1,8 @@
 const http = require('http')
 const https = require('https')
-const jp = require('jsonpath')
 const querystring = require('querystring')
+const FormData = require('form-data')
+const fs = require('fs')
 
 /**
 * This class represents a high level Web Request
@@ -25,7 +26,41 @@ class LynnRequest {
         'path': path,
         'headers': this.request.options.headers ? this.request.options.headers : {},
         'auth': this.request.options.auth ? this.request.options.auth : null,
-        'timeout': this.request.options.timeout ? this.request.options.timeout : 30000
+        'timeout': this.request.options.timeout ? this.request.options.timeout : 30000,
+      }
+
+      // Handle multipart form submissions
+      let form = null
+      if (this.request.options.form != null) {
+        form = new FormData()
+        const optionsForm = this.request.options.form
+
+        if (optionsForm.fields != null) {
+          for (const formField in optionsForm.fields) {
+            if (optionsForm.fields.hasOwnProperty(formField)) {
+              form.append(formField, optionsForm.fields[formField])
+            }
+          }
+        }
+
+        if (optionsForm.files != null) {
+          for (const formFile in optionsForm.files) {
+            if (optionsForm.files.hasOwnProperty(formFile)) {
+              form.append(formFile, fs.createReadStream(optionsForm.files[formFile]))
+            }
+          }
+        }
+
+        const formHeaders = form.getHeaders()
+        for (const formHeaderKey in formHeaders) {
+          if (formHeaders.hasOwnProperty(formHeaderKey)) {
+            options.headers[formHeaderKey] = formHeaders[formHeaderKey]
+          }
+        }
+      }
+
+      if (this.request.options.body != null) {
+        options.headers['Content-Length'] = JSON.stringify(this.request.options.body).length
       }
 
       const hrstart = process.hrtime()
@@ -78,8 +113,14 @@ class LynnRequest {
         callback(result)
       })
 
-      // TODO: post a body here if necessary
-      req.end()
+      if (form != null) {
+        form.pipe(req)
+      } else {
+        if (this.request.options.body != null) {
+          req.write(JSON.stringify(this.request.options.body))
+        }
+        req.end()
+      }
     }
 
     this.buildPath = function(options) {
