@@ -61,6 +61,7 @@ class LynnRequest {
 
       if (this.request.options.body != null) {
         options.headers['Content-Length'] = JSON.stringify(this.request.options.body).length
+        options.requestBody = this.request.options.body
       }
 
       const hrstart = process.hrtime()

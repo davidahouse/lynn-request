@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.2.1
+
+- Include requestBody in the result
+
 ## 0.2.0
 
 - Added support for multipart form uploads
