@@ -66,6 +66,7 @@ describe('Lynn Request', function() {
       const runner = new LynnRequest(successAPIRequest)
       runner.execute(function(result) {
         expect(result.statusCode).to.equal(200)
+        expect(result.endTime).to.not.equal(null)
         done()
       })
     })

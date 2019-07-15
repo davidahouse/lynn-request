@@ -1,13 +1,13 @@
 {
   "name": "lynn-request",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A high level API for making web requests",
   "license": "MIT",
   "repository": "davidahouse/lynn-request",
   "main": "index.js",
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^5.9.0",
+    "eslint": "^6.0.1",
     "eslint-config-google": "^0.11.0",
     "mocha": "^5.2.0",
     "nock": "^10.0.6"
@@ -21,7 +21,9 @@
   "dependencies": {
     "form-data": "^2.3.3",
     "jsonpath": "^1.0.0",
-    "moment": "^2.22.2"
+    "moment": "^2.22.2",
+    "lodash": ">=4.17.13",
+    "js-yaml": ">=3.13.1"
   },
   "eslintConfig": {
     "env": {
