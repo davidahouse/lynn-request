@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.3.0
+
+- Added endTime to the response
+
 ## 0.2.1
 
 - Include requestBody in the result

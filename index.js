@@ -37,7 +37,7 @@ class LynnRequest {
 
         if (optionsForm.fields != null) {
           for (const formField in optionsForm.fields) {
-            if (optionsForm.fields.hasOwnProperty(formField)) {
+            if (Object.prototype.hasOwnProperty.call(optionsForm.fields, formField)) {
               form.append(formField, optionsForm.fields[formField])
             }
           }
@@ -45,7 +45,7 @@ class LynnRequest {
 
         if (optionsForm.files != null) {
           for (const formFile in optionsForm.files) {
-            if (optionsForm.files.hasOwnProperty(formFile)) {
+            if (Object.prototype.hasOwnProperty.call(optionsForm.files, formFile)) {
               form.append(formFile, fs.createReadStream(optionsForm.files[formFile]))
             }
           }
@@ -53,7 +53,7 @@ class LynnRequest {
 
         const formHeaders = form.getHeaders()
         for (const formHeaderKey in formHeaders) {
-          if (formHeaders.hasOwnProperty(formHeaderKey)) {
+          if (Object.prototype.hasOwnProperty.call(formHeaders, formHeaderKey)) {
             options.headers[formHeaderKey] = formHeaders[formHeaderKey]
           }
         }
@@ -91,6 +91,7 @@ class LynnRequest {
               'body': parsedData,
               'error': null,
               'responseTime': hrend[1] / 1000000,
+              'endTime': Date.now(),
             }
             callback(result)
           } catch (e) {
@@ -101,6 +102,7 @@ class LynnRequest {
               'body': null,
               'error': e,
               'responseTime': hrend[1] / 1000000,
+              'endTime': Date.now(),
             }
             callback(result)
           }
@@ -115,6 +117,7 @@ class LynnRequest {
           'body': null,
           'error': e,
           'responseTime': null,
+          'endTime': Date.now(),
         }
         callback(result)
       })
