@@ -64,20 +64,48 @@ class LynnRequest {
         options.requestBody = this.request.options.body
       }
 
+      const chunked = this.request.options.chunked ? this.request.options.chunked : false
+      const chunkSize = this.request.options.chunkSize ? this.request.options.chunkSize : 1024
+      const chunkLines = this.request.options.chunkLines ? this.request.options.chunkLines : 1000
+
       const hrstart = process.hrtime()
       const protocol = options.protocol == 'http:' ? http : https
       const req = protocol.request(options, (res) => {
         res.setEncoding('utf8')
         let rawData = ''
-        res.on('data', (chunk) => {
-          if (this.request.options.chunked) {
-            rawData = '{}'
-            callback(chunk, false)
-          } else {
+        let incomingBuffer = ''
+        if (chunked) {
+          res.on('readable', function() {
+            let data
+            while (true) {
+              data = this.read(chunkSize)
+              if (!data) {
+                break
+              }
+
+              incomingBuffer += data
+
+              // see if we have enough lines now
+              const lines = incomingBuffer.split(/\n/)
+              if (lines.length > chunkLines) {
+                const last = lines.pop()
+                callback(lines, false)
+                incomingBuffer = last
+              }
+            }
+
+          })
+        } else {
+          res.on('data', (chunk) => {
             rawData += chunk
-          }
-        })
+          })
+        }
         res.on('end', () => {
+          if (chunked) {
+            const lines = incomingBuffer.split(/\n/)
+            callback(lines, true)
+            return
+          }
           const hrend = process.hrtime(hrstart)
           const {statusCode} = res
           const headers = res.headers
