@@ -70,7 +70,12 @@ class LynnRequest {
         res.setEncoding('utf8')
         let rawData = ''
         res.on('data', (chunk) => {
-          rawData += chunk
+          if (this.request.options.chunked) {
+            rawData = '{}'
+            callback(chunk, false)
+          } else {
+            rawData += chunk
+          }
         })
         res.on('end', () => {
           const hrend = process.hrtime(hrstart)
@@ -93,7 +98,7 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
-            callback(result)
+            callback(result, true)
           } catch (e) {
             const result = {
               'options': options,
@@ -104,7 +109,7 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
-            callback(result)
+            callback(result, true)
           }
         })
       })
@@ -119,7 +124,7 @@ class LynnRequest {
           'responseTime': null,
           'endTime': Date.now(),
         }
-        callback(result)
+        callback(result, true)
       })
 
       if (form != null) {
