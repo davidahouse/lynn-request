@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.4.0
+
+- Added a chunked request option that will return the raw data as it is coming in
+
 ## 0.3.0
 
 - Added endTime to the response
