@@ -1,5 +1,10 @@
 ## lynn-request
 
+## 0.4.2
+
+- A small refactor for normal & chunked requests
+- Should callback correctly when an error happens during request
+
 ## 0.4.1
 
 - Fixed a few bugs in the chunked request option
