@@ -68,44 +68,23 @@ class LynnRequest {
       const chunkSize = this.request.options.chunkSize ? this.request.options.chunkSize : 1024
       const chunkLines = this.request.options.chunkLines ? this.request.options.chunkLines : 1000
 
-      const hrstart = process.hrtime()
       const protocol = options.protocol == 'http:' ? http : https
+      if (!chunked) {
+        this.performRequest(protocol, options, form, callback)
+      } else {
+        this.performChunkedRequest(protocol, options, chunkSize, chunkLines, callback)
+      }
+    }
+
+    this.performRequest = function(protocol, options, form, callback) {
+      const hrstart = process.hrtime()
       const req = protocol.request(options, (res) => {
         res.setEncoding('utf8')
         let rawData = ''
-        let incomingBuffer = ''
-        if (chunked) {
-          res.on('readable', function() {
-            let data
-            while (true) {
-              data = this.read(chunkSize)
-              if (!data) {
-                break
-              }
-
-              incomingBuffer += data
-
-              // see if we have enough lines now
-              const lines = incomingBuffer.split(/\n/)
-              if (lines.length > chunkLines) {
-                const last = lines.pop()
-                callback(lines, false)
-                incomingBuffer = last
-              }
-            }
-
-          })
-        } else {
-          res.on('data', (chunk) => {
-            rawData += chunk
-          })
-        }
+        res.on('data', (chunk) => {
+          rawData += chunk
+        })
         res.on('end', () => {
-          if (chunked) {
-            const lines = incomingBuffer.split(/\n/)
-            callback(lines, true)
-            return
-          }
           const hrend = process.hrtime(hrstart)
           const {statusCode} = res
           const headers = res.headers
@@ -126,7 +105,7 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
-            callback(result, true)
+            callback(result)
           } catch (e) {
             const result = {
               'options': options,
@@ -137,7 +116,7 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
-            callback(result, true)
+            callback(result)
           }
         })
       })
@@ -152,7 +131,7 @@ class LynnRequest {
           'responseTime': null,
           'endTime': Date.now(),
         }
-        callback(result, true)
+        callback(result)
       })
 
       if (form != null) {
@@ -163,6 +142,41 @@ class LynnRequest {
         }
         req.end()
       }
+    }
+
+    this.performChunkedRequest = function(protocol, options, chunkSize, chunkLines, callback) {
+      const req = protocol.request(options, (res) => {
+        res.setEncoding('utf8')
+        let incomingBuffer = ''
+        res.on('readable', function() {
+          let data
+          while (true) {
+            data = this.read(chunkSize)
+            if (!data) {
+              break
+            }
+
+            incomingBuffer += data
+
+            // see if we have enough lines now
+            const lines = incomingBuffer.split(/\n/)
+            if (lines.length > chunkLines) {
+              const last = lines.pop()
+              callback(lines, false)
+              incomingBuffer = last
+            }
+          }
+        })
+        res.on('end', () => {
+          const lines = incomingBuffer.split(/\n/)
+          callback(lines, true)
+        })
+      })
+
+      req.on('error', (e) => {
+        callback([], true, e)
+      })
+      req.end()
     }
 
     this.buildPath = function(options) {
