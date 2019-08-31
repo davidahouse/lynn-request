@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.4.3
+
+- Bug fix when sending a request body
+
 ## 0.4.2
 
 - A small refactor for normal & chunked requests
