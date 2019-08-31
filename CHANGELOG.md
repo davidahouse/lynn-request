@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.4.5
+
+- Fixed a bug in the debugging
+
 ## 0.4.4
 
 - Added debugging to options

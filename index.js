@@ -68,7 +68,7 @@ class LynnRequest {
       const chunkSize = this.request.options.chunkSize ? this.request.options.chunkSize : 1024
       const chunkLines = this.request.options.chunkLines ? this.request.options.chunkLines : 1000
 
-      const debugging = this.request.debugging == true ? true : false
+      const debugging = this.request.options.debugging == true ? true : false
       if (debugging == true) {
         console.log('--- Lynn Request:')
         console.dir(options)

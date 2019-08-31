@@ -16,6 +16,17 @@ const successAPIRequest = {
   },
 }
 
+const successAPIRequestWithDebugging = {
+  'options': {
+    'protocol': 'http:',
+    'method': 'GET',
+    'host': 'localhost',
+    'port': '8080',
+    'path': '/contents',
+    'debugging': true,
+  },
+}
+
 const successChunkedAPIRequest = {
   'options': {
     'protocol': 'http:',
@@ -116,6 +127,16 @@ describe('Lynn Request', function() {
         } else {
           expect(result.length).to.be.greaterThan(900)
         }
+      })
+    })
+
+    it('should show debug messages when configured', function(done) {
+      nockSuccessBasic()
+      const runner = new LynnRequest(successAPIRequestWithDebugging)
+      runner.execute(function(result) {
+        expect(result.statusCode).to.equal(200)
+        expect(result.endTime).to.not.equal(null)
+        done()
       })
     })
   })
