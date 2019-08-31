@@ -61,7 +61,7 @@ class LynnRequest {
 
       if (this.request.options.body != null) {
         options.headers['Content-Length'] = JSON.stringify(this.request.options.body).length
-        options.requestBody = this.request.options.body
+        options.body = this.request.options.body
       }
 
       const chunked = this.request.options.chunked ? this.request.options.chunked : false
@@ -137,8 +137,8 @@ class LynnRequest {
       if (form != null) {
         form.pipe(req)
       } else {
-        if (this.request.options.body != null) {
-          req.write(JSON.stringify(this.request.options.body))
+        if (options.body != null) {
+          req.write(JSON.stringify(options.body))
         }
         req.end()
       }
