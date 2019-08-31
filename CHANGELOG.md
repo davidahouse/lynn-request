@@ -1,5 +1,9 @@
 ## lynn-request
 
+## 0.4.4
+
+- Added debugging to options
+
 ## 0.4.3
 
 - Bug fix when sending a request body
