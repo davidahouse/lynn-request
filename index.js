@@ -68,15 +68,21 @@ class LynnRequest {
       const chunkSize = this.request.options.chunkSize ? this.request.options.chunkSize : 1024
       const chunkLines = this.request.options.chunkLines ? this.request.options.chunkLines : 1000
 
+      const debugging = this.request.debugging == true ? true : false
+      if (debugging == true) {
+        console.log('--- Lynn Request:')
+        console.dir(options)
+      }
+
       const protocol = options.protocol == 'http:' ? http : https
       if (!chunked) {
-        this.performRequest(protocol, options, form, callback)
+        this.performRequest(protocol, options, form, debugging, callback)
       } else {
-        this.performChunkedRequest(protocol, options, chunkSize, chunkLines, callback)
+        this.performChunkedRequest(protocol, options, chunkSize, chunkLines, debugging, callback)
       }
     }
 
-    this.performRequest = function(protocol, options, form, callback) {
+    this.performRequest = function(protocol, options, form, debugging, callback) {
       const hrstart = process.hrtime()
       const req = protocol.request(options, (res) => {
         res.setEncoding('utf8')
@@ -105,6 +111,10 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
+            if (debugging == true) {
+              console.log('--- Lynn Result:')
+              console.dir(result)
+            }    
             callback(result)
           } catch (e) {
             const result = {
@@ -116,6 +126,10 @@ class LynnRequest {
               'responseTime': hrend[1] / 1000000,
               'endTime': Date.now(),
             }
+            if (debugging == true) {
+              console.log('--- Lynn Result:')
+              console.dir(result)
+            }    
             callback(result)
           }
         })
@@ -131,6 +145,10 @@ class LynnRequest {
           'responseTime': null,
           'endTime': Date.now(),
         }
+        if (debugging == true) {
+          console.log('--- Lynn Result:')
+          console.dir(result)
+        }
         callback(result)
       })
 
@@ -138,13 +156,17 @@ class LynnRequest {
         form.pipe(req)
       } else {
         if (options.body != null) {
+          if (debugging == true) {
+            console.log('--- writing body to request')
+            console.dir(options.body)
+          }
           req.write(JSON.stringify(options.body))
         }
         req.end()
       }
     }
 
-    this.performChunkedRequest = function(protocol, options, chunkSize, chunkLines, callback) {
+    this.performChunkedRequest = function(protocol, options, chunkSize, chunkLines, debugging, callback) {
       const req = protocol.request(options, (res) => {
         res.setEncoding('utf8')
         let incomingBuffer = ''
