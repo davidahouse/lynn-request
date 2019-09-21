@@ -97,7 +97,7 @@ class LynnRequest {
 
           try {
             let parsedData = null
-            if (headers['content-type'].includes('json')) {
+            if (headers['content-type'] != null && headers['content-type'].includes('json')) {
               parsedData = JSON.parse(rawData)
             } else {
               parsedData = rawData
